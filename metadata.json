@@ -1,0 +1,7 @@
+{
+  "name": "Malawi Environmental Health Information System (MeHIS)",
+  "description": "A comprehensive mobile-first health information system for HSA registration, reporting, and health facility management in Malawi with offline capabilities.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
