@@ -197,6 +197,42 @@ export interface WASHHouseholdAssessment {
   submittedAt?: string;
 }
 
+export interface HealthPostInfo {
+  id: string;
+  district: string;
+  name: string;
+  village: string;
+  gvh: string;
+  ta: string;
+  facility: string;
+  catchmentPopulation: number;
+  yearConstructed: string;
+  coords: { lat: number; lng: number } | null;
+  isFunctional: 'Yes' | 'No';
+  staffAvailable: string[];
+  hasWater: 'Yes' | 'No';
+  hasElectricity: 'Yes' | 'No';
+  electricityTypes: string[];
+  remarks: string;
+  submittedAt: string;
+}
+
+export interface HCMCInfo {
+  id: string;
+  district: string;
+  hcmcName: string;
+  village: string;
+  gvh: string;
+  ta: string;
+  facility: string;
+  isFormed: 'Yes' | 'No';
+  isOrientedRoles: 'Yes' | 'No';
+  isOrientedDFF: 'Yes' | 'No';
+  isFunctional: 'Yes' | 'No';
+  remarks: string;
+  submittedAt: string;
+}
+
 export type ThreeState = 'Yes' | 'No' | 'N/A';
 
 export interface HouseholdRecord {
