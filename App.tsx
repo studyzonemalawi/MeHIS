@@ -48,7 +48,7 @@ const Button = ({ children, onClick, className = "", variant = "primary", disabl
   return <button type={type} disabled={disabled} onClick={onClick} className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}>{children}</button>;
 };
 
-const Input = ({ label, value, onChange, type = "text", placeholder = "", required = false, maxLength, pattern, error, className = "", min, max, step, prefix, disabled }: any) => {
+const Input = ({ label, value, onChange, type = "text", placeholder = "", required = false, maxLength, pattern, error, className = "", min, max, step, prefix, disabled, icon: Icon }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const actualType = isPassword ? (showPassword ? "text" : "password") : type;
@@ -59,6 +59,11 @@ const Input = ({ label, value, onChange, type = "text", placeholder = "", requir
       <div className="relative flex items-center">
         {prefix && (
           <span className="absolute left-4 text-slate-400 font-bold text-sm pointer-events-none">{prefix}</span>
+        )}
+        {Icon && !prefix && (
+          <span className="absolute left-4 text-slate-400 pointer-events-none">
+            <Icon size={18} />
+          </span>
         )}
         <input 
           type={actualType} 
@@ -75,7 +80,7 @@ const Input = ({ label, value, onChange, type = "text", placeholder = "", requir
           max={max}
           step={step}
           disabled={disabled}
-          className={`w-full ${prefix ? 'pl-16' : 'px-4'} ${isPassword ? 'pr-20' : ''} py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all bg-white disabled:bg-slate-50 ${error ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200 shadow-sm shadow-slate-100/30'}`}
+          className={`w-full ${prefix || Icon ? 'pl-11' : 'px-4'} ${isPassword ? 'pr-20' : ''} py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all bg-white disabled:bg-slate-50 ${error ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200 shadow-sm shadow-slate-100/30'}`}
         />
         {isPassword && (
           <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
@@ -88,18 +93,28 @@ const Input = ({ label, value, onChange, type = "text", placeholder = "", requir
   );
 };
 
-const Select = ({ label, value, onChange, options, required = false, error, className = "" }: any) => (
+const Select = ({ label, value, onChange, options, required = false, error, className = "", icon: Icon }: any) => (
   <div className={`flex flex-col gap-1 mb-4 ${className}`}>
     {label && <label className="text-sm font-semibold text-slate-600">{label}{required && <span className="text-rose-500">*</span>}</label>}
-    <select 
-      value={value || ""} 
-      onChange={e => onChange(e.target.value)}
-      required={required}
-      className={`px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white shadow-sm shadow-slate-100/30 ${error ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200'}`}
-    >
-      <option value="">Select...</option>
-      {options.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
-    </select>
+    <div className="relative">
+      {Icon && (
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+          <Icon size={18} />
+        </span>
+      )}
+      <select 
+        value={value || ""} 
+        onChange={e => onChange(e.target.value)}
+        required={required}
+        className={`${Icon ? 'pl-11' : 'px-4'} w-full py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white shadow-sm shadow-slate-100/30 appearance-none ${error ? 'border-rose-500 focus:ring-rose-500' : 'border-slate-200'}`}
+      >
+        <option value="">Select...</option>
+        {options.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+      </select>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <ChevronRight size={16} className="rotate-90" />
+      </div>
+    </div>
     {error && <p className="text-[10px] text-rose-500 font-medium flex items-center gap-1 mt-1.5"><AlertCircle size={10}/> {error}</p>}
   </div>
 );
@@ -157,6 +172,31 @@ const SectionHeader = ({ title, icon: Icon }: { title: string, icon: any }) => (
     <h4 className="font-black text-slate-700 uppercase tracking-widest text-[10px]">{title}</h4>
   </div>
 );
+
+const DeleteConfirmationModal = ({ isOpen, onCancel, onConfirm }: { isOpen: boolean, onCancel: () => void, onConfirm: () => void }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-[2rem] max-w-sm w-full shadow-2xl p-8 border border-slate-100 animate-in zoom-in-95 duration-200">
+        <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <AlertOctagon size={32} />
+        </div>
+        <h3 className="text-xl font-black text-slate-800 text-center mb-3 tracking-tight">Delete Record?</h3>
+        <p className="text-slate-500 text-center text-sm mb-8 leading-relaxed">
+          Are you sure you want to delete this record? This action cannot be undone.
+        </p>
+        <div className="flex flex-col gap-3">
+          <Button variant="danger" size="lg" className="w-full" onClick={onConfirm}>
+            Yes, Delete Permanently
+          </Button>
+          <Button variant="ghost" className="w-full text-slate-400 font-bold" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Module Form Components ---
 
@@ -458,6 +498,13 @@ export default function App() {
   const [hcmcRecords, setHcmcRecords] = useState<HCMCInfo[]>(getFromStorage<HCMCInfo[]>('hcmcRecords', []));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Health Post Search/Filter State
+  const [hpSearch, setHpSearch] = useState('');
+  const [hpDistrictFilter, setHpDistrictFilter] = useState('All Districts');
+
+  // Deletion state
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string, type: 'health-post' | 'hcmc' } | null>(null);
+
   // Editing state
   const [editingHealthPost, setEditingHealthPost] = useState<HealthPostInfo | undefined>(undefined);
   const [editingHcmc, setEditingHcmc] = useState<HCMCInfo | undefined>(undefined);
@@ -466,6 +513,15 @@ export default function App() {
   useEffect(() => saveToStorage('hsaData', hsaData), [hsaData]);
   useEffect(() => saveToStorage('healthPosts', healthPosts), [healthPosts]);
   useEffect(() => saveToStorage('hcmcRecords', hcmcRecords), [hcmcRecords]);
+
+  const filteredHealthPosts = useMemo(() => {
+    return healthPosts.filter(hp => {
+      const matchesSearch = hp.name.toLowerCase().includes(hpSearch.toLowerCase()) || 
+                           hp.village.toLowerCase().includes(hpSearch.toLowerCase());
+      const matchesDistrict = hpDistrictFilter === 'All Districts' || hp.district === hpDistrictFilter;
+      return matchesSearch && matchesDistrict;
+    });
+  }, [healthPosts, hpSearch, hpDistrictFilter]);
 
   const handleEditHealthPost = (hp: HealthPostInfo) => {
     setEditingHealthPost(hp);
@@ -483,6 +539,16 @@ export default function App() {
     setRegistrationMode('hub');
   };
 
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === 'health-post') {
+      setHealthPosts(healthPosts.filter(h => h.id !== deleteTarget.id));
+    } else if (deleteTarget.type === 'hcmc') {
+      setHcmcRecords(hcmcRecords.filter(h => h.id !== deleteTarget.id));
+    }
+    setDeleteTarget(null);
+  };
+
   const NavItem = ({ id, icon: Icon, label }: any) => (
     <button onClick={() => { setView(id); setIsSidebarOpen(false); setRegistrationMode('hub'); setEditingHealthPost(undefined); setEditingHcmc(undefined); }} className={`flex items-center gap-3 w-full p-4 transition-all ${view === id ? 'text-emerald-700 bg-emerald-50 border-r-4 border-emerald-600 font-black' : 'text-slate-500 hover:bg-slate-50'}`}>
       <Icon size={20} className={view === id ? 'text-emerald-600' : 'text-slate-400'} /><span className="text-sm">{label}</span>
@@ -494,6 +560,14 @@ export default function App() {
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
       {isSidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 lg:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />}
+      
+      {/* Reusable Delete Confirmation Modal */}
+      <DeleteConfirmationModal 
+        isOpen={deleteTarget !== null} 
+        onCancel={() => setDeleteTarget(null)} 
+        onConfirm={confirmDelete} 
+      />
+
       <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-100 z-50 transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b flex items-center gap-3"><div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg"><Heart className="text-white" size={22} /></div><h1 className="font-black text-2xl tracking-tighter text-slate-800">MeHIS</h1></div>
         <nav className="py-6 overflow-y-auto max-h-[calc(100vh-160px)]">
@@ -549,35 +623,64 @@ export default function App() {
 
           {view === 'health-posts' && (
              <div className="space-y-6">
-               <div className="flex justify-between items-center px-2">
+               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2">
                  <div><h3 className="text-2xl font-black text-slate-800 tracking-tighter">Health Post Directory</h3><p className="text-sm text-slate-400">Manage community health infrastructure records</p></div>
                  <Button onClick={() => { setEditingHealthPost(undefined); setRegistrationMode('form'); }} size="lg" variant="blue"><Plus size={20}/> New Health Post</Button>
                </div>
                
                {registrationMode === 'hub' ? (
-                 <Card className="p-4">
-                   {healthPosts.length === 0 ? (
-                     <div className="text-center py-16"><Building2 size={48} className="mx-auto text-slate-100 mb-4"/><p className="text-slate-300 font-bold">No health post records found</p></div>
-                   ) : (
-                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                       {healthPosts.map(hp => (
-                         <div key={hp.id} className="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center hover:shadow-md transition-shadow">
-                           <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600"><Building2 size={20}/></div>
-                             <div>
-                               <p className="font-black text-slate-800">{hp.name}</p>
-                               <p className="text-[10px] text-slate-400 uppercase tracking-widest">{hp.village} | {hp.district}</p>
+                 <>
+                   {/* Search & Filter Bar */}
+                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                     <Input 
+                        placeholder="Search by name or village..." 
+                        value={hpSearch} 
+                        onChange={(v: string) => setHpSearch(v)} 
+                        icon={Search} 
+                        className="mb-0"
+                     />
+                     <Select 
+                        options={MALAWI_DISTRICTS} 
+                        value={hpDistrictFilter} 
+                        onChange={(v: string) => setHpDistrictFilter(v)} 
+                        icon={Filter}
+                        className="mb-0"
+                     />
+                     <div className="flex items-center gap-2 px-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                       {filteredHealthPosts.length} Results Found
+                     </div>
+                   </div>
+
+                   <Card className="p-4">
+                     {filteredHealthPosts.length === 0 ? (
+                       <div className="text-center py-16">
+                         <Search size={48} className="mx-auto text-slate-100 mb-4"/>
+                         <p className="text-slate-300 font-bold">No health posts match your criteria</p>
+                         {(hpSearch || hpDistrictFilter !== 'All Districts') && (
+                           <button onClick={() => { setHpSearch(''); setHpDistrictFilter('All Districts'); }} className="text-emerald-600 text-xs font-black uppercase mt-2">Clear Filters</button>
+                         )}
+                       </div>
+                     ) : (
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                         {filteredHealthPosts.map(hp => (
+                           <div key={hp.id} className="p-4 bg-slate-50 border rounded-2xl flex justify-between items-center hover:shadow-md transition-shadow group">
+                             <div className="flex items-center gap-4">
+                               <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"><Building2 size={20}/></div>
+                               <div>
+                                 <p className="font-black text-slate-800">{hp.name}</p>
+                                 <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{hp.village} • {hp.district}</p>
+                               </div>
+                             </div>
+                             <div className="flex gap-1">
+                               <Button variant="ghost" className="text-blue-500" onClick={() => handleEditHealthPost(hp)}><Edit size={16}/></Button>
+                               <Button variant="ghost" className="text-rose-500" onClick={() => setDeleteTarget({ id: hp.id, type: 'health-post' })}><Trash size={16}/></Button>
                              </div>
                            </div>
-                           <div className="flex gap-1">
-                             <Button variant="ghost" className="text-blue-500" onClick={() => handleEditHealthPost(hp)}><Edit size={16}/></Button>
-                             <Button variant="ghost" className="text-rose-500" onClick={() => setHealthPosts(healthPosts.filter(h => h.id !== hp.id))}><Trash size={16}/></Button>
-                           </div>
-                         </div>
-                       ))}
-                     </div>
-                   )}
-                 </Card>
+                         ))}
+                       </div>
+                     )}
+                   </Card>
+                 </>
                ) : (
                  <HealthPostForm 
                   initialData={editingHealthPost}
@@ -619,7 +722,7 @@ export default function App() {
                            </div>
                            <div className="flex gap-1">
                              <Button variant="ghost" className="text-amber-600" onClick={() => handleEditHcmc(rec)}><Edit size={16}/></Button>
-                             <Button variant="ghost" className="text-rose-500" onClick={() => setHcmcRecords(hcmcRecords.filter(h => h.id !== rec.id))}><Trash size={16}/></Button>
+                             <Button variant="ghost" className="text-rose-500" onClick={() => setDeleteTarget({ id: rec.id, type: 'hcmc' })}><Trash size={16}/></Button>
                            </div>
                          </div>
                        ))}
