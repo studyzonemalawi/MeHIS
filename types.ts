@@ -66,6 +66,7 @@ export interface MonthlyWorkPlan {
 
 export interface HSARegistration {
   id: string;
+  // a. Identification
   district: string;
   hsaName: string;
   sex: 'Male' | 'Female';
@@ -86,10 +87,14 @@ export interface HSARegistration {
   homeGVH: string;
   homeVillage: string;
   postalAddress?: string;
+
+  // b. Training Status
   trainedICHIS: 'Yes' | 'No';
   preserviceShort: 'Yes' | 'No';
   preserviceLong: 'Yes' | 'No';
   mscePasses: 'Yes' | 'No';
+
+  // c. HSA Location
   reportingFacility: string;
   facilityType: string;
   facilityTypeOther?: string;
@@ -99,6 +104,8 @@ export interface HSARegistration {
   catchmentPopulation: number;
   gvhNames: string[];
   villages: VillageData[];
+
+  // d. Geography
   coords?: { lat: number; lng: number };
   distanceToFacility: number;
   distanceToCouncil: number;
@@ -108,11 +115,15 @@ export interface HSARegistration {
   villageClinicFunctional: 'Yes' | 'No';
   hardToReach: 'Yes' | 'No';
   residentInCatchment: 'Yes' | 'No';
+
+  // e. Gadgets
   govPhone: 'Yes' | 'No';
   phoneType?: 'Smart phone' | 'Tablet';
   phoneFunctional?: 'Yes' | 'No';
   yearReceivedPhone?: string;
   solarCharger: 'Yes' | 'No';
+
+  // f. Supplies
   supplies: {
     bicycle: { received: 'Yes' | 'No'; year?: string };
     motorcycle: { received: 'Yes' | 'No'; year?: string };
@@ -123,6 +134,8 @@ export interface HSARegistration {
     drugBoxes: { received: 'Yes' | 'No'; year?: string };
     torch: { received: 'Yes' | 'No'; year?: string };
   };
+
+  // g. Topics
   thematicTrainings: { [key: string]: 'Yes' | 'No' };
   submittedAt?: string;
 }
@@ -140,24 +153,25 @@ export interface WaterPoint {
   repairState: 'Good' | 'Fair' | 'Poor';
   mechanicContacted: boolean;
   lastInspectionDate: string;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
   submittedAt?: string;
 }
 
 export interface WaterQualitySample {
   id: string;
+  sampleId: string;
   waterPointId: string;
   waterPointName: string;
-  sampleId: string;
   collectionDate: string;
   collectionTime: string;
-  testType: 'H2S' | 'DPD' | 'Both';
-  h2sResult?: 'Pending' | 'Negative' | 'Positive';
-  h2sIncubationStart?: string;
-  dpdResult?: number;
+  // H2S Logic
+  h2sTestDone: 'Yes' | 'No';
+  h2sIncubationStartTime?: string;
+  h2sIncubationEndTime?: string;
+  h2sResult?: 'Positive' | 'Negative' | 'Pending';
+  // DPD Logic
+  dpdTestDone: 'Yes' | 'No';
+  dpdResult?: number; // ppm or mg/L
   actionTaken: string;
-  submitted: boolean;
   submittedAt?: string;
 }
 
@@ -166,13 +180,16 @@ export interface WASHHouseholdAssessment {
   date: string;
   householdHead: string;
   village: string;
+  // Sanitation
   hasToilet: 'Yes' | 'No';
   toiletType?: string;
   toiletCondition?: 'Clean' | 'Dirty' | 'Needs Repair';
   isShared: 'Yes' | 'No';
+  // Water
   mainWaterSource: string;
   waterStorage: string;
   waterTreatment: string;
+  // Hygiene
   handwashAvailable: 'Yes' | 'No';
   soapAvailable: 'Yes' | 'No';
   compoundClean: 'Yes' | 'No';
@@ -211,7 +228,7 @@ export interface HouseholdRecord {
   meatHandledProperly: ThreeState;
   fliesControlled: ThreeState;
   observedDiseases: string[];
-  diseaseCases: { [key: string]: number };
+  diseaseCases: { [key: string]: number | undefined };
   otherDiseaseSpec?: string;
 }
 
