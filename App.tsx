@@ -483,21 +483,43 @@ const WaterPointForm = ({ onSave }: { onSave: (data: WaterPoint) => void }) => {
 const SanitationAssessmentForm = ({ onSave }: { onSave: (data: WASHHouseholdAssessment) => void }) => {
   const [data, setData] = useState<Partial<WASHHouseholdAssessment>>({
     hasToilet: 'No',
+    isShared: 'No',
     handwashAvailable: 'No',
     soapAvailable: 'No',
-    isShared: 'No'
+    compoundClean: 'No',
+    wasteManagement: 'Pit',
+    waterStorage: '',
+    waterTreatment: 'None'
   });
 
   return (
-    <Card title="Sanitation Assessment">
-      <div className="space-y-4">
-        <Input label="Household Head" value={data.householdHead} onChange={(v: string) => setData({...data, householdHead: v})} />
-        <Input label="Village" value={data.village} onChange={(v: string) => setData({...data, village: v})} />
-        <Select label="Has Toilet?" options={['Yes', 'No']} value={data.hasToilet} onChange={(v: any) => setData({...data, hasToilet: v})} />
-        <Select label="Handwash Available?" options={['Yes', 'No']} value={data.handwashAvailable} onChange={(v: any) => setData({...data, handwashAvailable: v})} />
-        <Select label="Soap Available?" options={['Yes', 'No']} value={data.soapAvailable} onChange={(v: any) => setData({...data, soapAvailable: v})} />
+    <Card title="Sanitation Assessment" description="Conduct a household hygiene and sanitation audit.">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+        <Input label="Household Head" value={data.householdHead} onChange={(v: string) => setData({...data, householdHead: v})} required />
+        <Input label="Village" value={data.village} onChange={(v: string) => setData({...data, village: v})} required />
+        
+        <Select label="Main Water Source" options={WATER_POINT_TYPES} value={data.mainWaterSource} onChange={(v: string) => setData({...data, mainWaterSource: v})} required />
+        <Input label="Water Storage Container" placeholder="e.g. Covered bucket, Jerry can" value={data.waterStorage} onChange={(v: string) => setData({...data, waterStorage: v})} required />
+        
+        <Select label="Water Treatment Method" options={WATER_TREATMENT_METHODS} value={data.waterTreatment} onChange={(v: string) => setData({...data, waterTreatment: v})} required />
+        <Select label="Has Toilet?" options={['Yes', 'No']} value={data.hasToilet} onChange={(v: any) => setData({...data, hasToilet: v})} required />
+
+        {data.hasToilet === 'Yes' && (
+          <>
+            <Select label="Toilet Type" options={TOILET_TYPES} value={data.toiletType} onChange={(v: string) => setData({...data, toiletType: v})} />
+            <Select label="Toilet Condition" options={['Clean', 'Dirty', 'Needs Repair']} value={data.toiletCondition} onChange={(v: any) => setData({...data, toiletCondition: v})} />
+            <Select label="Is Toilet Shared?" options={['Yes', 'No']} value={data.isShared} onChange={(v: any) => setData({...data, isShared: v})} />
+          </>
+        )}
+
+        <Select label="Handwash Station Available?" options={['Yes', 'No']} value={data.handwashAvailable} onChange={(v: any) => setData({...data, handwashAvailable: v})} required />
+        <Select label="Soap/Ash Available?" options={['Yes', 'No']} value={data.soapAvailable} onChange={(v: any) => setData({...data, soapAvailable: v})} required />
+        <Select label="Is Compound Clean?" options={['Yes', 'No']} value={data.compoundClean} onChange={(v: any) => setData({...data, compoundClean: v})} required />
+        <Select label="Waste Management" options={['Pit', 'Indiscriminate', 'Other']} value={data.wasteManagement} onChange={(v: any) => setData({...data, wasteManagement: v})} required />
       </div>
-      <Button className="w-full mt-6" onClick={() => onSave({...data, id: Date.now().toString(), date: new Date().toISOString()} as WASHHouseholdAssessment)}>Save Assessment</Button>
+      <Button className="w-full mt-6 py-3" onClick={() => onSave({...data, id: Date.now().toString(), date: new Date().toISOString()} as WASHHouseholdAssessment)}>
+        <Save size={18}/> Submit Assessment
+      </Button>
     </Card>
   );
 };
@@ -933,33 +955,4 @@ export default function App() {
             <div className="space-y-6">
                {washView === 'hub' ? (
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4">
-                    <button onClick={() => setWashView('waterPoints')} className="p-8 bg-white border rounded-[2rem] text-center shadow-sm hover:border-blue-500 transition-all"><div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><Zap size={24}/></div><p className="font-black text-slate-800">Water Points</p></button>
-                    <button className="p-8 bg-white border rounded-[2rem] text-center shadow-sm opacity-50 cursor-not-allowed"><div className="w-14 h-14 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4"><Microscope size={24}/></div><p className="font-black text-slate-400">Water Quality</p></button>
-                    <button onClick={() => setWashView('sanitation')} className="p-8 bg-white border rounded-[2rem] text-center shadow-sm hover:border-amber-500 transition-all"><div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><ClipboardList size={24}/></div><p className="font-black text-slate-800">Sanitation</p></button>
-                 </div>
-               ) : (
-                 <>
-                   <button onClick={() => setWashView('hub')} className="flex items-center gap-2 text-xs font-black text-emerald-600 uppercase tracking-widest mb-6"><ChevronRight className="rotate-180" size={16}/> Back to WASH Hub</button>
-                   {washView === 'waterPoints' && <WaterPointForm onSave={(d) => { setWaterPoints([...waterPoints, d]); setWashView('hub'); alert("Water Point Saved."); }} />}
-                   {washView === 'sanitation' && <SanitationAssessmentForm onSave={(d) => { setSanitationAssessments([...sanitationAssessments, d]); setWashView('hub'); alert("Assessment Saved."); }} />}
-                 </>
-               )}
-            </div>
-          )}
-
-          {view === 'inspections' && (
-             <VillageInspectionForm onSave={(d) => { setInspections([...inspections, d]); setView('home'); alert("Village Visit Submitted Successfully!"); }} />
-          )}
-
-          {view === 'registration' && (
-             <HSARegistrationForm onSave={(d: any) => { 
-                setHsaData([...hsaData, d]); 
-                setView('home'); 
-                alert("Community Health Report Submitted Successfully!"); 
-             }} />
-          )}
-        </div>
-      </main>
-    </div>
-  );
-}
+                    <button onClick={() => setWashView('waterPoints')} className="p-8 bg-white border rounded-[2rem] text-center shadow-sm hover:border-blue-500 transition-all"><div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-
