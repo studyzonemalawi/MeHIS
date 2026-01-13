@@ -92,7 +92,7 @@ export interface HSARegistration {
   trainedICHIS: 'Yes' | 'No';
   preserviceShort: 'Yes' | 'No';
   preserviceLong: 'Yes' | 'No';
-  mscePasses: 'Yes' | 'No';
+  mscePasses: 'Yes' | 'No'; // With English, Maths, Bio/Gen Science
 
   // c. HSA Location
   reportingFacility: string;
@@ -229,6 +229,7 @@ export interface HCMCInfo {
   isOrientedRoles: 'Yes' | 'No';
   isOrientedDFF: 'Yes' | 'No';
   isFunctional: 'Yes' | 'No';
+  status: 'Active' | 'Inactive' | 'Pending';
   remarks: string;
   submittedAt: string;
 }
